@@ -1,9 +1,4 @@
 ﻿using Azure.Data.Tables;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Translation.Application.Models;
 using Translation.Domain.Models;
 using Translation.Service.BlobStorage;

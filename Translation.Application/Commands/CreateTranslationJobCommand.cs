@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Translation.Application.Models;
+﻿using Translation.Application.Models;
 using Translation.Domain.Models;
 using Translation.Service.QueueStorage;
 using Translation.Service.TableStorage;
@@ -13,7 +12,7 @@ namespace Translation.Application.Commands
         private readonly IQueueStorageService _queueStorageService;
 
         public CreateTranslationJobCommand(
-            ITableStorageService tableStorageService, 
+            ITableStorageService tableStorageService,
             IQueueStorageService queueStorageService)
         {
             _tableStorageService = tableStorageService;

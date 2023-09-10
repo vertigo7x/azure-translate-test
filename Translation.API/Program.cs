@@ -1,18 +1,17 @@
-using Translation.Application.Commands;
-using Translation.Application.Queries;
+using System.Text.Json.Serialization;
+using Translation.Application.Extensions;
 using Translation.Service.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddLogging();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Add Translation Services
 builder.Services.AddTranslationServices(builder.Configuration);
 // Add Application CQ's
-builder.Services.AddSingleton<CreateTranslationJobCommand>();
-builder.Services.AddSingleton<ReadTranslationQuery>();
+builder.Services.AddApplicationComponents(builder.Configuration);
 
 
 var app = builder.Build();

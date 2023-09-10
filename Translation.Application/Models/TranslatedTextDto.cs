@@ -16,7 +16,7 @@ namespace Translation.Application.Models
         {
         }
         public TranslatedTextDto(
-            string id, 
+            string id,
             TranslationJobStatusEnum status,
             string? sourceText = null,
             string? translatedText = null,
@@ -31,6 +31,6 @@ namespace Translation.Application.Models
             ToLanguage = toLanguage;
         }
 
-            
+
     }
 }

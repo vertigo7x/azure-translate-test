@@ -25,7 +25,7 @@ namespace Translation.Service.QueueStorage
             await _queueClient.SendMessageAsync(message);
         }
         public async Task<QueueMessage> ReceiveMessage()
-        {            
+        {
             var response = await _queueClient.ReceiveMessagesAsync();
             _logger.LogInformation($"Received message: {response.Value.FirstOrDefault()?.MessageText}");
             var message = response.Value.FirstOrDefault();
