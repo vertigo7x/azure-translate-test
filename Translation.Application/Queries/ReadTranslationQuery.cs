@@ -22,7 +22,7 @@ namespace Translation.Application.Queries
             TranslatedTextDto translatedText = new();
             // Get Translation Job from Table Storage
             var translationEntity = await _tableStorageService.GetEntity(id);
-            if (translationEntity != null)
+            if (translationEntity.RowKey != null)
             {
                 MapTableEntityToTranslatedTextDto(translationEntity, translatedText);
                 if (translatedText.Status == TranslationJobStatusEnum.Completed)

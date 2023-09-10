@@ -7,6 +7,9 @@
         public string DetectedLanguage { get; set; }
         public string ToLanguage { get; set; }
 
+        public TranslatedTextModel()
+        {
+        }
         public TranslatedTextModel(string id, string sourceText, string translatedText, string detectedLanguage, string toLanguage)
         {
             Id = id;
