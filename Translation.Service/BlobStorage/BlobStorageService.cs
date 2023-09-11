@@ -1,8 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using Translation.Domain.Models;
 
 namespace Translation.Service.BlobStorage
 {
@@ -17,7 +15,7 @@ namespace Translation.Service.BlobStorage
             _logger = logger;
         }
 
-        public async Task<TranslatedTextModel> GetBlobContent(string fileName)
+        public async Task<string> GetBlobContent(string fileName)
         {
             var blobClient = _blobContainerClient.GetBlobClient(fileName);
             _logger.LogInformation($"BlobService: Reading blob with name: {fileName}");
@@ -26,7 +24,7 @@ namespace Translation.Service.BlobStorage
             using var reader = new StreamReader(content);
             var result = await reader.ReadToEndAsync();
             _logger.LogInformation($"BlobService: Blob content: {result}");
-            return JsonSerializer.Deserialize<TranslatedTextModel>(result);
+            return result;
         }
 
         public async Task WriteBlobContent(string fileName, string content)

@@ -21,10 +21,8 @@ namespace Translation.Application.Commands
 
         public async Task<CreateTranslationJobResultDto> Handle(TranslationJobDto model)
         {
-            // Insert Translation Job into Table Storage
             TranslationEntityModel translationEntity = new();
             await _tableStorageService.InsertEntity(translationEntity);
-            // Send Translation Job to Queue
             TranslationJobModel translationJobModel = new(translationEntity.Id, model.TextToTranslate, model.ToLanguage);
             await _queueStorageService.SendMessage(translationJobModel);
             return new CreateTranslationJobResultDto(translationEntity.Id);

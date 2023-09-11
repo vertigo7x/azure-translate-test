@@ -3,12 +3,13 @@ using Azure.Data.Tables;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Translation.Domain.Models;
+using Translation.Service.Extensions;
 
 namespace Translation.Service.TableStorage
 {
     public class TableStorageService : ITableStorageService
     {
-        private const string PARTITION_KEY = "translation";
+
         private readonly TableClient _tableClient;
         private readonly ILogger<TableStorageService> _logger;
 
@@ -20,17 +21,14 @@ namespace Translation.Service.TableStorage
 
         public async Task InsertEntity(TranslationEntityModel translationEntity)
         {
-            var entity = new TableEntity(PARTITION_KEY, translationEntity.Id)
-            {
-                { "Status", translationEntity.Status.ToString() }
-            };
+            var entity = new TableEntity(translationEntity.AsDictionary());
             _logger.LogInformation($"TableService: Interting entity: {entity}");
             await _tableClient.AddEntityAsync(entity);
         }
 
         public async Task UpdateEntity(TranslationEntityModel translationEntity)
         {
-            var entity = new TableEntity(PARTITION_KEY, translationEntity.Id)
+            var entity = new TableEntity(translationEntity.AsDictionary())
             {
                 { "Status", TranslationJobStatusEnum.Completed.ToString() }
             };
@@ -38,10 +36,10 @@ namespace Translation.Service.TableStorage
             await _tableClient.UpdateEntityAsync(entity, ETag.All);
         }
 
-        public async Task<TableEntity> GetEntity(string rowKey)
+        public async Task<TableEntity> GetEntity(TranslationEntityModel translationEntity)
         {
-            _logger.LogInformation($"TableService: Reading entity with Id: {rowKey}");
-            var entity = await _tableClient.GetEntityAsync<TableEntity>(PARTITION_KEY, rowKey);
+            _logger.LogInformation($"TableService: Reading entity with Id: {translationEntity.Id}");
+            var entity = await _tableClient.GetEntityAsync<TableEntity>(translationEntity.PartitionKey, translationEntity.Id);
             return entity.Value;
         }
     }

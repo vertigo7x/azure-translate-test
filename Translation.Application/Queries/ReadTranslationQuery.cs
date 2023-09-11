@@ -1,4 +1,5 @@
 ﻿using Azure.Data.Tables;
+using System.Text.Json;
 using Translation.Application.Models;
 using Translation.Domain.Models;
 using Translation.Service.BlobStorage;
@@ -20,38 +21,41 @@ namespace Translation.Application.Queries
         public async Task<TranslatedTextDto> Execute(string id)
         {
             TranslatedTextDto translatedText = new();
-            // Get Translation Job from Table Storage
-            var translationEntity = await _tableStorageService.GetEntity(id);
-            if (translationEntity.RowKey != null)
+            var translationTableEntity = await _tableStorageService.GetEntity(new TranslationEntityModel() { Id = id });
+
+            if (translationTableEntity.RowKey == null)
             {
-                MapTableEntityToTranslatedTextDto(translationEntity, translatedText);
-                if (translatedText.Status == TranslationJobStatusEnum.Completed)
+                return translatedText;
+            }
+            translatedText = MapTableEntityToTranslatedTextDto(translationTableEntity, translatedText);
+            if (translatedText.Status == TranslationJobStatusEnum.Completed)
+            {
+                var translationBlobContent = await _blobStorageService.GetBlobContent(id);
+                var translation = JsonSerializer.Deserialize<TranslatedTextModel>(translationBlobContent);
+                if (translation != null)
                 {
-                    // Get Translation from Blob Storage
-                    var translation = await _blobStorageService.GetBlobContent(id);
-                    if (translation != null)
-                    {
-                        MapTranslationToTranslatedTextDto(translation, translatedText);
-                    }
+                    translatedText = MapTranslationToTranslatedTextDto(translation, translatedText);
                 }
             }
             return translatedText;
         }
 
-        private static void MapTableEntityToTranslatedTextDto(TableEntity translationEntity, TranslatedTextDto? translatedText)
+        private TranslatedTextDto MapTableEntityToTranslatedTextDto(TableEntity translationTableEntity, TranslatedTextDto? translatedText)
         {
-            translationEntity.TryGetValue("Status", out object statusObject);
+            translationTableEntity.TryGetValue("Status", out object statusObject);
             Enum.TryParse(statusObject.ToString(), out TranslationJobStatusEnum status);
-            translatedText.Id = translationEntity.RowKey;
+            translatedText.Id = translationTableEntity.RowKey;
             translatedText.Status = status;
+            return translatedText;
         }
 
-        private static void MapTranslationToTranslatedTextDto(TranslatedTextModel translation, TranslatedTextDto? translatedText)
+        private TranslatedTextDto MapTranslationToTranslatedTextDto(TranslatedTextModel translation, TranslatedTextDto? translatedText)
         {
             translatedText.SourceText = translation.SourceText;
             translatedText.TranslatedText = translation.TranslatedText;
             translatedText.DetectedLanguage = translation.DetectedLanguage;
             translatedText.ToLanguage = translation.ToLanguage;
+            return translatedText;
         }
     }
 }

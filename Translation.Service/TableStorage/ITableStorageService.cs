@@ -7,6 +7,6 @@ namespace Translation.Service.TableStorage
     {
         public Task InsertEntity(TranslationEntityModel translationEntity);
         public Task UpdateEntity(TranslationEntityModel translationEntity);
-        public Task<TableEntity> GetEntity(string rowKey);
+        public Task<TableEntity> GetEntity(TranslationEntityModel translationEntity);
     }
 }
