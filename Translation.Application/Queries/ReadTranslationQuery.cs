@@ -18,9 +18,9 @@ namespace Translation.Application.Queries
             _tableStorageService = tableStorageService;
         }
 
-        public async Task<TranslatedTextDto> Execute(string id)
+        public async Task<TranslatedTextResponse> Execute(string id)
         {
-            TranslatedTextDto translatedText = new();
+            TranslatedTextResponse translatedText = new();
             var translationTableEntity = await _tableStorageService.GetEntity(new TranslationEntityModel() { Id = id });
 
             if (translationTableEntity.RowKey == null)
@@ -40,7 +40,7 @@ namespace Translation.Application.Queries
             return translatedText;
         }
 
-        private TranslatedTextDto MapTableEntityToTranslatedTextDto(TableEntity translationTableEntity, TranslatedTextDto? translatedText)
+        private TranslatedTextResponse MapTableEntityToTranslatedTextDto(TableEntity translationTableEntity, TranslatedTextResponse? translatedText)
         {
             translationTableEntity.TryGetValue("Status", out object statusObject);
             Enum.TryParse(statusObject.ToString(), out TranslationJobStatusEnum status);
@@ -49,7 +49,7 @@ namespace Translation.Application.Queries
             return translatedText;
         }
 
-        private TranslatedTextDto MapTranslationToTranslatedTextDto(TranslatedTextModel translation, TranslatedTextDto? translatedText)
+        private TranslatedTextResponse MapTranslationToTranslatedTextDto(TranslatedTextModel translation, TranslatedTextResponse? translatedText)
         {
             translatedText.SourceText = translation.SourceText;
             translatedText.TranslatedText = translation.TranslatedText;

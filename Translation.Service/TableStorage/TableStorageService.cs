@@ -21,7 +21,7 @@ namespace Translation.Service.TableStorage
 
         public async Task InsertEntity(TranslationEntityModel translationEntity)
         {
-            var entity = new TableEntity(translationEntity.AsDictionary());
+            var entity = MapTranslationEntityToTableEntity(translationEntity);
             _logger.LogInformation($"TableService: Interting entity: {entity}");
             await _tableClient.AddEntityAsync(entity);
         }
@@ -41,6 +41,16 @@ namespace Translation.Service.TableStorage
             _logger.LogInformation($"TableService: Reading entity with Id: {translationEntity.Id}");
             var entity = await _tableClient.GetEntityAsync<TableEntity>(translationEntity.PartitionKey, translationEntity.Id);
             return entity.Value;
+        }
+
+        private TableEntity MapTranslationEntityToTableEntity(TranslationEntityModel translationEntity)
+        {
+            var tableEntity =  new TableEntity(translationEntity.AsDictionary())
+            {
+                { "Status",translationEntity.Status.ToString() }
+            };
+            tableEntity.RowKey = translationEntity.Id;
+            return tableEntity;
         }
     }
 }

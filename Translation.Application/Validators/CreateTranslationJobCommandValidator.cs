@@ -3,9 +3,9 @@ using Translation.Application.Models;
 
 namespace Translation.Application.Validators
 {
-    public class TranslationJobDtoValidator : AbstractValidator<TranslationJobDto>
+    public class CreateTranslationJobCommandValidator : AbstractValidator<CreateTranslationJobCommand>
     {
-        public TranslationJobDtoValidator()
+        public CreateTranslationJobCommandValidator()
         {
             RuleFor(x => x.ToLanguage).NotEmpty();
             RuleFor(x => x.TextToTranslate).NotEmpty();

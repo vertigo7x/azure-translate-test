@@ -1,17 +1,18 @@
-﻿using Translation.Application.Models;
+﻿using MediatR;
+using Translation.Application.Models;
 using Translation.Domain.Models;
 using Translation.Service.QueueStorage;
 using Translation.Service.TableStorage;
 
 namespace Translation.Application.Commands
 {
-    public class CreateTranslationJobCommand
+    public class CreateTranslationJobCommandHandler : IRequestHandler<CreateTranslationJobCommand, CreateTranslationJobResponse>
     {
 
         private readonly ITableStorageService _tableStorageService;
         private readonly IQueueStorageService _queueStorageService;
 
-        public CreateTranslationJobCommand(
+        public CreateTranslationJobCommandHandler(
             ITableStorageService tableStorageService,
             IQueueStorageService queueStorageService)
         {
@@ -19,13 +20,14 @@ namespace Translation.Application.Commands
             _queueStorageService = queueStorageService;
         }
 
-        public async Task<CreateTranslationJobResultDto> Handle(TranslationJobDto model)
+        public async Task<CreateTranslationJobResponse> Handle(CreateTranslationJobCommand model, CancellationToken cancellationToken)
         {
             TranslationEntityModel translationEntity = new();
             await _tableStorageService.InsertEntity(translationEntity);
             TranslationJobModel translationJobModel = new(translationEntity.Id, model.TextToTranslate, model.ToLanguage);
             await _queueStorageService.SendMessage(translationJobModel);
-            return new CreateTranslationJobResultDto(translationEntity.Id);
+            return new CreateTranslationJobResponse(translationEntity.Id);
         }
     }
 }
+ 

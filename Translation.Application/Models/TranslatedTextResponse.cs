@@ -2,7 +2,7 @@
 
 namespace Translation.Application.Models
 {
-    public class TranslatedTextDto
+    public class TranslatedTextResponse
     {
         public string Id { get; set; }
         public TranslationJobStatusEnum Status { get; set; }
@@ -12,10 +12,10 @@ namespace Translation.Application.Models
         public string? ToLanguage { get; set; }
 
 
-        public TranslatedTextDto()
+        public TranslatedTextResponse()
         {
         }
-        public TranslatedTextDto(
+        public TranslatedTextResponse(
             string id,
             TranslationJobStatusEnum status,
             string? sourceText = null,

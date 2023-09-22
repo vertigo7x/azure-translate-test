@@ -12,7 +12,7 @@ namespace Translation.Application.Extensions
         public static void AddApplicationComponents(this IServiceCollection services, IConfiguration configuration)
         {
             // Register Application CQ's
-            services.AddSingleton<CreateTranslationJobCommand>();
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddSingleton<ReadTranslationQuery>();
             // Register Validators
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

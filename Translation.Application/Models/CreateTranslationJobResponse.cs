@@ -1,10 +1,10 @@
 ﻿namespace Translation.Application.Models
 {
-    public class CreateTranslationJobResultDto
+    public class CreateTranslationJobResponse
     {
         public string Id { get; set; }
 
-        public CreateTranslationJobResultDto(string id)
+        public CreateTranslationJobResponse(string id)
         {
             Id = id;
         }

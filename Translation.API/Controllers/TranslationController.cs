@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Translation.Application.Commands;
 using Translation.Application.Models;
 using Translation.Application.Queries;
@@ -10,27 +11,27 @@ namespace Translation.API.Controllers
     public class TranslationController : ControllerBase
     {
 
-        private readonly CreateTranslationJobCommand _createTranslationJobCommand;
+        private readonly IMediator _mediator;
         private readonly ReadTranslationQuery _readTranslationQuery;
         private readonly ILogger<TranslationController> _logger;
 
         public TranslationController(
-            CreateTranslationJobCommand createTranslationJobCommand,
+            IMediator mediator,
             ReadTranslationQuery readTranslationQuery,
             ILogger<TranslationController> logger
             )
         {
-            _createTranslationJobCommand = createTranslationJobCommand;
+            _mediator = mediator;
             _readTranslationQuery = readTranslationQuery;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTranslationJob([FromBody] TranslationJobDto translationJobDto)
+        public async Task<IActionResult> CreateTranslationJob([FromBody] CreateTranslationJobCommand translationJob)
         {
             try
             {
-                var createTanslationResult = await _createTranslationJobCommand.Handle(translationJobDto);
+                var createTanslationResult = await _mediator.Send(translationJob);
                 _logger.LogInformation($"TranslationController: Translation Job created with Id: {createTanslationResult.Id}");
                 return Ok(createTanslationResult);
             }
@@ -54,7 +55,6 @@ namespace Translation.API.Controllers
                 }
                 _logger.LogInformation($"TranslationController: Translation Job found: {translationJobId}");
                 return Ok(translatedText);
-
             }
             catch (Exception ex)
             {
